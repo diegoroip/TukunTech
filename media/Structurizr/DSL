@@ -1,0 +1,193 @@
+workspace "TukunTech" "Sistema de monitoreo continuo de signos vitales para adultos mayores" {
+    !impliedRelationships "false"
+    !identifiers "hierarchical"
+
+    model {
+        // Actores principales
+        AdultoMayor = person "Adulto Mayor" "Paciente que requiere monitoreo preventivo de signos vitales" "Patient"
+        PacienteCardico = person "Paciente Cardíaco" "Persona con problemas cardíacos crónicos que necesita monitoreo continuo" "CardiacPatient"
+        Familiar = person "Familiar" "Miembro de la familia que supervisa y cuida al paciente" "Caregiver"
+        Cuidador = person "Cuidador Profesional" "Personal médico o cuidador profesional responsable del paciente" "Professional"
+        MedicoTratante = person "Médico Tratante" "Profesional médico que supervisa el tratamiento y revisa historiales" "Doctor"
+        Administrador = person "Administrador del Sistema" "Administra usuarios, dispositivos y configuraciones del sistema" "Admin"
+
+        // Sistema principal
+        TukunTech = softwareSystem "TukunTech" "Sistema IoT de monitoreo continuo de signos vitales con alertas inteligentes y notificaciones en tiempo real" "MainSystem" {
+            description "Plataforma integral que combina dispositivos IoT portátiles con aplicaciones móviles y web para el monitoreo preventivo de frecuencia cardíaca, saturación de oxígeno y generación de alertas automáticas escalonadas"
+        }
+
+        // Dispositivos físicos
+        DispositivoIoT = softwareSystem "Dispositivo TukunTech IoT" "Sensor portátil basado en ESP32 que mide frecuencia cardíaca y SpO2 con alertas LED locales" "IoTDevice"
+
+        // Sistemas de comunicación externos
+        ServicioSMS = softwareSystem "Proveedor de SMS" "Servicio de mensajería SMS para alertas críticas de salud" "SMS"
+        ServicioEmail = softwareSystem "Servicio de Email" "Sistema de correo electrónico para notificaciones y reportes médicos" "Email"
+        ServicioNotificacionesPush = softwareSystem "Servicio de Notificaciones Push" "Firebase/Apple Push para notificaciones inmediatas en dispositivos móviles" "Push"
+
+        // Sistemas médicos externos
+        SistemaHospitalario = softwareSystem "Sistema Hospitalario (HIS/EHR)" "Historia clínica electrónica y sistemas hospitalarios para integración médica" "Hospital"
+        ServicioAmbulancia = softwareSystem "Central de Ambulancias" "Sistema de emergencias médicas para llamadas automáticas críticas" "Emergency"
+        FarmaciaDigital = softwareSystem "Farmacia Digital" "Plataforma para gestión de medicamentos y recordatorios de prescripciones" "Pharmacy"
+
+        // Servicios de infraestructura
+        PlataformaCloud = softwareSystem "Plataforma Cloud (AWS/Azure)" "Infraestructura en la nube para procesamiento, almacenamiento y escalabilidad" "Cloud"
+        ServicioAnalytics = softwareSystem "Servicio de Analytics" "Plataforma de análisis de datos médicos para insights y tendencias de salud" "Analytics"
+        
+        // Sistemas de soporte
+        SistemaAutenticacion = softwareSystem "Sistema de Autenticación" "Servicio de identidad y autenticación segura con soporte MFA" "Auth"
+        SistemaPagos = softwareSystem "Sistema de Pagos" "Plataforma de procesamiento de pagos para suscripciones familiares e individuales" "Payment"
+
+        // Relaciones principales - Usuarios con el sistema
+        AdultoMayor -> TukunTech "Usa el dispositivo IoT y consulta su estado de salud" "HTTPS/Mobile"
+        AdultoMayor -> DispositivoIoT "Lleva puesto el dispositivo para monitoreo continuo" "Bluetooth/WiFi"
+        
+        PacienteCardico -> TukunTech "Monitorea signos vitales y gestiona medicación" "HTTPS/Web/Mobile"
+        PacienteCardico -> DispositivoIoT "Utiliza para monitoreo cardíaco especializado" "Bluetooth/WiFi"
+        
+        Familiar -> TukunTech "Supervisa remotamente al paciente y recibe alertas" "HTTPS/Web/Mobile"
+        Cuidador -> TukunTech "Gestiona múltiples pacientes y coordina cuidados" "HTTPS/Web"
+        MedicoTratante -> TukunTech "Revisa historiales médicos y ajusta tratamientos" "HTTPS/Web"
+        Administrador -> TukunTech "Administra el sistema, usuarios y dispositivos" "HTTPS/Web"
+
+        // Relaciones del dispositivo IoT
+        DispositivoIoT -> TukunTech "Envía mediciones de signos vitales en tiempo real" "WiFi/4G/LoRaWAN"
+        TukunTech -> DispositivoIoT "Configura umbrales y parámetros de monitoreo" "WiFi/4G"
+
+        // Relaciones con sistemas de notificación
+        TukunTech -> ServicioSMS "Envía alertas críticas de salud por SMS" "HTTPS/API"
+        TukunTech -> ServicioEmail "Envía reportes médicos y notificaciones" "SMTP/API"
+        TukunTech -> ServicioNotificacionesPush "Envía notificaciones inmediatas a dispositivos móviles" "HTTPS/API"
+
+        // Relaciones con sistemas médicos
+        TukunTech -> SistemaHospitalario "Sincroniza datos médicos y historiales clínicos" "HL7 FHIR/API"
+        TukunTech -> ServicioAmbulancia "Activa llamadas automáticas de emergencia" "HTTPS/Telephony API"
+        TukunTech -> FarmaciaDigital "Gestiona prescripciones y recordatorios de medicación" "HTTPS/API"
+
+        // Relaciones con infraestructura
+        TukunTech -> PlataformaCloud "Procesa y almacena datos de salud de forma segura" "HTTPS/Cloud APIs"
+        TukunTech -> ServicioAnalytics "Analiza patrones de salud y genera insights médicos" "HTTPS/API"
+        TukunTech -> SistemaAutenticacion "Autentica usuarios y gestiona permisos médicos" "OAuth 2.0/SAML"
+        TukunTech -> SistemaPagos "Procesa suscripciones y facturación" "HTTPS/API"
+
+        // Relaciones bidireccionales importantes
+        ServicioAmbulancia -> TukunTech "Confirma recepción de alertas de emergencia" "Webhook/API"
+        SistemaHospitalario -> TukunTech "Envía actualizaciones de tratamiento médico" "HL7 FHIR/Webhook"
+    }
+
+    views {
+        systemContext TukunTech "ContextDiagram" "Diagrama de contexto del sistema TukunTech mostrando actores y sistemas externos" {
+            include AdultoMayor
+            include PacienteCardico
+            include Familiar
+            include Cuidador
+            include MedicoTratante
+            include Administrador
+            include TukunTech
+            include DispositivoIoT
+            include ServicioSMS
+            include ServicioEmail
+            include ServicioNotificacionesPush
+            include SistemaHospitalario
+            include ServicioAmbulancia
+            include FarmaciaDigital
+            include PlataformaCloud
+            include ServicioAnalytics
+            include SistemaAutenticacion
+            include SistemaPagos
+        }
+
+        styles {
+            element "Patient" {
+                shape "Person"
+                background "#3498db"
+                color "#ffffff"
+            }
+            element "CardiacPatient" {
+                shape "Person"
+                background "#e74c3c"
+                color "#ffffff"
+            }
+            element "Caregiver" {
+                shape "Person"
+                background "#2ecc71"
+                color "#ffffff"
+            }
+            element "Professional" {
+                shape "Person"
+                background "#9b59b6"
+                color "#ffffff"
+            }
+            element "Doctor" {
+                shape "Person"
+                background "#1abc9c"
+                color "#ffffff"
+            }
+            element "Admin" {
+                shape "Person"
+                background "#34495e"
+                color "#ffffff"
+            }
+            element "MainSystem" {
+                shape "RoundedBox"
+                background "#d35400"
+                color "#ffffff"
+                fontSize "14"
+            }
+            element "IoTDevice" {
+                shape "Robot"
+                background "#8e44ad"
+                color "#ffffff"
+            }
+            element "SMS" {
+                shape "MobileDevicePortrait"
+                background "#f39c12"
+                color "#ffffff"
+            }
+            element "Email" {
+                shape "WebBrowser"
+                background "#2980b9"
+                color "#ffffff"
+            }
+            element "Push" {
+                shape "MobileDevicePortrait"
+                background "#27ae60"
+                color "#ffffff"
+            }
+            element "Hospital" {
+                shape "RoundedBox"
+                background "#c0392b"
+                color "#ffffff"
+            }
+            element "Emergency" {
+                shape "RoundedBox"
+                background "#8b0000"
+                color "#ffffff"
+            }
+            element "Pharmacy" {
+                shape "RoundedBox"
+                background "#16a085"
+                color "#ffffff"
+            }
+            element "Cloud" {
+                shape "RoundedBox"
+                background "#95a5a6"
+                color "#ffffff"
+            }
+            element "Analytics" {
+                shape "RoundedBox"
+                background "#7f8c8d"
+                color "#ffffff"
+            }
+            element "Auth" {
+                shape "RoundedBox"
+                background "#2c3e50"
+                color "#ffffff"
+            }
+            element "Payment" {
+                shape "RoundedBox"
+                background "#f1c40f"
+                color "#000000"
+            }
+        }
+    }
+}
